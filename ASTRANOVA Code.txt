@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstraNova Zenith | Precision Astrology Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #010103;
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --neon-purple: #b06ab3;
+            --neon-blue: #4568dc;
+            --gold: #ffcc33;
+            --text: #f1f5f9;
+            --border: rgba(255, 255, 255, 0.08);
+            --success: #34d399;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            background: radial-gradient(circle at center, #0a0a1a 0%, #010103 100%);
+        }
+
+        .stars-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/stardust.png');
+            opacity: 0.2; z-index: -1; pointer-events: none;
+        }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem 5%; background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(25px); border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000;
+        }
+
+        .logo { font-family: 'Cinzel'; font-size: 1.7rem; letter-spacing: 4px; font-weight: 700; color: #fff; }
+        .logo span { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
+
+        .nav-links button {
+            background: none; border: none; color: #94a3b8; margin-left: 20px;
+            cursor: pointer; font-family: 'Outfit'; font-size: 0.8rem; text-transform: uppercase;
+            letter-spacing: 2px; transition: 0.4s;
+        }
+
+        .nav-links button:hover, .nav-links button.active-nav { color: #fff; text-shadow: 0 0 10px #fff; }
+
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
+
+        /* Form Styling */
+        .profile-header {
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 28px; padding: 2.5rem; margin-bottom: 2rem;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;
+            backdrop-filter: blur(15px); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
+        label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; }
+
+        input {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+            padding: 14px; border-radius: 14px; color: white; outline: none; transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        input:focus { border-color: var(--neon-purple); background: rgba(255,255,255,0.07); }
+
+        .ignite-btn {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+            border: none; border-radius: 14px; color: white; font-weight: 700;
+            cursor: pointer; transition: 0.4s; text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        .ignite-btn:hover { transform: translateY(-3px); box-shadow: 0 0 30px rgba(176, 106, 179, 0.4); }
+
+        /* Content Areas */
+        .tab-content { display: none; animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+        .active { display: block; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; }
+        
+        .glass-card { 
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 24px; padding: 2rem; backdrop-filter: blur(10px);
+            position: relative; overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(176, 106, 179, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* SVG & Visuals */
+        .chart-svg { width: 100%; height: auto; transition: 0.5s; }
+        .vedic-line { stroke: var(--neon-blue); stroke-width: 1.5; fill: none; opacity: 0.8; }
+        .vedic-num { fill: var(--gold); font-size: 16px; font-family: 'Cinzel'; font-weight: bold; }
+
+        /* Match Score */
+        .sync-score-circle {
+            width: 130px; height: 130px; border-radius: 50%; border: 2px solid var(--neon-blue);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; font-weight: 700; margin: 1.5rem auto;
+            color: var(--success); box-shadow: 0 0 20px rgba(52, 211, 153, 0.2);
+        }
+
+        /* Tarot Card */
+        .tarot-slot {
+            width: 170px; height: 270px; margin: 1rem auto;
+            border: 2px solid var(--gold); border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 4.5rem; background: rgba(0,0,0,0.5);
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .neon-text { color: var(--neon-blue); text-shadow: 0 0 10px var(--neon-blue); font-family: 'Cinzel'; }
+        .gold-text { color: var(--gold); font-weight: 600; }
+        .muted { color: #64748b; font-size: 0.9rem; line-height: 1.6; }
+        .text-center { text-align: center; }
+        .mt-4 { margin-top: 2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="stars-overlay"></div>
+
+    <nav>
+        <div class="logo">ASTRA<span>NOVA</span></div>
+        <div class="nav-links">
+            <button onclick="switchTab(this, 'tab-western')" class="active-nav">Western</button>
+            <button onclick="switchTab(this, 'tab-vedic')">Vedic Chart</button>
+            <button onclick="switchTab(this, 'tab-mystic')">Match & Oracle</button>
+            <button onclick="switchTab(this, 'tab-journal')">Journal</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="profile-header">
+            <div class="input-group">
+                <label>Seeker Name</label>
+                <input type="text" id="userName" placeholder="Celestial Name">
+            </div>
+            <div class="input-group">
+                <label>Birth Date</label>
+                <input type="date" id="birthDate">
+            </div>
+            <div class="input-group">
+                <label>Birth Time</label>
+                <input type="time" id="birthTime">
+            </div>
+            <button class="ignite-btn" style="height: 50px; align-self: flex-end;" onclick="processAllAstrology()">Synchronize Soul</button>
+        </section>
+
+        <section id="tab-western" class="tab-content active">
+            <div class="dashboard-grid">
+                <div class="glass-card">
+                    <h3>Sun Sign Alignment</h3>
+                    <h1 id="west-sign" class="neon-text mt-4">---</h1>
+                    <p id="west-desc" class="muted mt-4">Awaiting celestial data entry...</p>
+                </div>
+                <div class="glass-card text-center">
+                    <h3>Zodiac Wheel</h3>
+                    <svg id="westernSVG" viewBox="0 0 400 400" class="chart-svg"></svg>
+                </div>
+                <div class="glass-card">
+                    <h3>Cosmic Numbers</h3>
+                    <p>Life Path: <span id="num-lifepath" class="gold-text">?</span></p>
+                    <p>Power Number: <span id="num-destiny" class="gold-text">?</span></p>
+                    <hr style="margin: 1.5rem 0; opacity: 0.1;">
+                    <h3>Moon Phase</h3>
+                    <div id="moon-icon" style="font-size: 3.5rem; margin: 10px 0;">🌑</div>
+                    <p id="moon-name" class="gold-text">New Moon</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-vedic" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="glass-card">
+                    <h3>Lagna (Rising)</h3>
+                    <h2 id="ved-lagna" class="neon-text mt-4">---</h2>
+                    <p class="muted mt-2">The filter through which you view the world.</p>
+                    <div id="dasha-container" class="mt-4">
+                        <h4>Current Mahadasha</h4>
+                        <p id="current-dasha" class="gold-text">Jupiter Period</p>
+                    </div>
+                </div>
+                <div class="glass-card text-center">
+                    <h3>D1 Birth Chart</h3>
+                    <svg id="vedicSVG" viewBox="0 0 400 400" class="chart-svg"></svg>
+                </div>
+                <div class="glass-card">
+                    <h3>Upaya (Remedies)</h3>
+                    <p><strong>Gemstone:</strong> <span id="ved-gem" class="gold-text">-</span></p>
+                    <p><strong>Bija Mantra:</strong> <span id="ved-mantra" class="muted" style="display: block; margin-top: 5px;">-</span></p>
+                    <p class="mt-4"><strong>Auspicious Day:</strong> <span id="ved-day" class="gold-text">-</span></p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-mystic" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="glass-card text-center">
+                    <h3>Synastry Match</h3>
+                    <p class="muted">Check energetic sync with a partner</p>
+                    <input type="date" id="partnerDate" style="width: 100%; margin: 1.5rem 0;">
+                    <button class="ignite-btn" style="width: 100%;" onclick="checkSync()">Calculate Compatibility</button>
+                    
+                    <div id="sync-ui" style="display: none;">
+                        <div class="sync-score-circle" id="syncScore">0%</div>
+                        <h4 id="syncVerdict" class="gold-text">---</h4>
+                        <p id="syncDetail" class="muted mt-2"></p>
+                    </div>
+                </div>
+
+                <div class="glass-card text-center">
+                    <h3>Oracle Card</h3>
+                    <div id="tarotCard" class="tarot-slot" onclick="drawTarot()">?</div>
+                    <h4 id="tarotTitle" class="neon-text">Draw Card</h4>
+                    <p id="tarotMeaning" class="muted mt-2"></p>
+                </div>
+
+                <div class="glass-card text-center">
+                    <h3>Void Question</h3>
+                    <input type="text" id="oracleQuery" placeholder="Will I find my path?" style="width: 100%; margin-bottom: 1rem;">
+                    <button class="ignite-btn" onclick="consultOracle()">Ask Oracle</button>
+                    <h2 id="oracleAnswer" class="neon-text mt-4"></h2>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-journal" class="tab-content">
+            <div class="glass-card">
+                <h3>The Akashic Archive</h3>
+                <textarea id="journalNote" placeholder="Reflect on the planetary energies today..." style="width: 100%; height: 180px; background: rgba(0,0,0,0.4); color: white; border: 1px solid var(--border); border-radius: 18px; padding: 1.5rem; margin-top: 1rem; outline: none; font-family: 'Outfit';"></textarea>
+                <button class="ignite-btn mt-4" onclick="saveNote()">Seal Entry</button>
+                <div id="notesDisplay" class="mt-4"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- PRECISION ZODIAC DATA ---
+        const ZODIAC_DATA = [
+            { name: "Aries", element: "Fire", dates: "Mar 21 - Apr 19", desc: "A fearless pioneer, full of energy and raw passion." },
+            { name: "Taurus", element: "Earth", dates: "Apr 20 - May 20", desc: "A grounded soul who values stability and sensual beauty." },
+            { name: "Gemini", element: "Air", dates: "May 21 - Jun 20", desc: "A versatile communicator with an endless curiosity for life." },
+            { name: "Cancer", element: "Water", dates: "Jun 21 - Jul 22", desc: "A highly intuitive protector who values home and family." },
+            { name: "Leo", element: "Fire", dates: "Jul 23 - Aug 22", desc: "A natural leader radiating confidence and creative fire." },
+            { name: "Virgo", element: "Earth", dates: "Aug 23 - Sep 22", desc: "A meticulous thinker focused on purity, service, and detail." },
+            { name: "Libra", element: "Air", dates: "Sep 23 - Oct 22", desc: "A seeker of balance, beauty, and social harmony." },
+            { name: "Scorpio", element: "Water", dates: "Oct 23 - Nov 21", desc: "An intense, powerful seeker of truth and transformation." },
+            { name: "Sagittarius", element: "Fire", dates: "Nov 22 - Dec 21", desc: "A philosophical traveler chasing truth and adventure." },
+            { name: "Capricorn", element: "Earth", dates: "Dec 22 - Jan 19", desc: "A disciplined mountain climber focused on long-term legacy." },
+            { name: "Aquarius", element: "Air", dates: "Jan 20 - Feb 18", desc: "A visionary rebel focused on innovation and the collective." },
+            { name: "Pisces", element: "Water", dates: "Feb 19 - Mar 20", desc: "A compassionate dreamer with deep psychic sensitivity." }
+        ];
+
+        // --- CORE NAVIGATION ---
+        function switchTab(btn, id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active-nav'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active-nav');
+        }
+
+        // --- PRECISION ZODIAC LOGIC ---
+        function getZodiacIndex(month, day) {
+            const mmdd = (month * 100) + day;
+            if (mmdd >= 321 && mmdd <= 419) return 0;  // Aries
+            if (mmdd >= 420 && mmdd <= 520) return 1;  // Taurus
+            if (mmdd >= 521 && mmdd <= 620) return 2;  // Gemini
+            if (mmdd >= 621 && mmdd <= 722) return 3;  // Cancer
+            if (mmdd >= 723 && mmdd <= 822) return 4;  // Leo
+            if (mmdd >= 823 && mmdd <= 922) return 5;  // Virgo
+            if (mmdd >= 923 && mmdd <= 1022) return 6; // Libra
+            if (mmdd >= 1023 && mmdd <= 1121) return 7; // Scorpio
+            if (mmdd >= 1122 && mmdd <= 1221) return 8; // Sag
+            if (mmdd >= 1222 || mmdd <= 119) return 9;  // Capricorn
+            if (mmdd >= 120 && mmdd <= 218) return 10; // Aquarius
+            if (mmdd >= 219 && mmdd <= 320) return 11; // Pisces
+            return 0;
+        }
+
+        // --- MAIN CALCULATION ENGINE ---
+        function processAllAstrology() {
+            const dob = document.getElementById('birthDate').value;
+            const tob = document.getElementById('birthTime').value;
+            if(!dob) return alert("Please select a birth date.");
+
+            const date = new Date(dob);
+            const m = date.getMonth() + 1;
+            const d = date.getDate();
+            
+            const idx = getZodiacIndex(m, d);
+            const sign = ZODIAC_DATA[idx];
+
+            // Western Updates
+            document.getElementById('west-sign').innerText = sign.name;
+            document.getElementById('west-desc').innerText = sign.desc;
+            document.getElementById('num-lifepath').innerText = calculateLifePath(dob);
+            document.getElementById('num-destiny').innerText = Math.floor(Math.random() * 9) + 1;
+            drawWesternWheel(idx);
+
+            // Vedic Updates
+            // Simplified Lagna based on 2-hour birth time shifts from sunrise (6am)
+            let hour = tob ? parseInt(tob.split(':')[0]) : 12;
+            let lagnaIdx = (idx + Math.floor((hour - 6 + 24) % 24 / 2)) % 12;
+            document.getElementById('ved-lagna').innerText = ZODIAC_DATA[lagnaIdx].name;
+            
+            drawVedicChart(lagnaIdx);
+            
+            const dashaPlanets = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"];
+            document.getElementById('current-dasha').innerText = dashaPlanets[idx % 9] + " Mahadasha";
+
+            // Remedies
+            const remedies = [
+                {g: "Ruby", m: "Om Hrim Sum Suryaya Namah", d: "Sunday"},
+                {g: "Pearl", m: "Om Shram Shrim Shraum Sah Chandraya Namah", d: "Monday"},
+                {g: "Coral", m: "Om Kram Krim Kraum Sah Bhaumaya Namah", d: "Tuesday"},
+                {g: "Emerald", m: "Om Bram Brim Braum Sah Budhaya Namah", d: "Wednesday"},
+                {g: "Yellow Sapphire", m: "Om Gram Grim Graum Sah Gurave Namah", d: "Thursday"},
+                {g: "Diamond", m: "Om Dram Drim Draum Sah Shukraya Namah", d: "Friday"},
+                {g: "Blue Sapphire", m: "Om Pram Prim Praum Sah Shanaye Namah", d: "Saturday"}
+            ];
+            const rem = remedies[lagnaIdx % 7];
+            document.getElementById('ved-gem').innerText = rem.g;
+            document.getElementById('ved-mantra').innerText = rem.m;
+            document.getElementById('ved-day').innerText = rem.d;
+        }
+
+        // --- COMPATIBILITY (MATCH) ---
+        function checkSync() {
+            const d1 = document.getElementById('birthDate').value;
+            const d2 = document.getElementById('partnerDate').value;
+            if(!d1 || !d2) return alert("Both dates required.");
+
+            const u1 = new Date(d1);
+            const u2 = new Date(d2);
+            const s1 = ZODIAC_DATA[getZodiacIndex(u1.getMonth()+1, u1.getDate())];
+            const s2 = ZODIAC_DATA[getZodiacIndex(u2.getMonth()+1, u2.getDate())];
+
+            let score = 50;
+            if(s1.element === s2.element) score = 92;
+            else if((s1.element === "Fire" && s2.element === "Air") || (s1.element === "Air" && s2.element === "Fire")) score = 85;
+            else if((s1.element === "Earth" && s2.element === "Water") || (s1.element === "Water" && s2.element === "Earth")) score = 88;
+            else score = 45 + Math.floor(Math.random() * 20);
+
+            document.getElementById('sync-ui').style.display = "block";
+            document.getElementById('syncScore').innerText = score + "%";
+            document.getElementById('syncVerdict').innerText = score > 80 ? "Harmonious Soulmate" : (score > 60 ? "Stable Match" : "Challenging Growth");
+            document.getElementById('syncDetail').innerText = `${s1.name} (${s1.element}) & ${s2.name} (${s2.element})`;
+        }
+
+        // --- DRAWING FUNCTIONS ---
+        function drawWesternWheel(idx) {
+            const svg = document.getElementById('westernSVG');
+            svg.innerHTML = '<circle cx="200" cy="200" r="180" fill="none" stroke="var(--border)" stroke-width="2" />';
+            for(let i=0; i<12; i++) {
+                let a = i * 30 * Math.PI/180;
+                svg.innerHTML += `<line x1="200" y1="200" x2="${200+180*Math.cos(a)}" y2="${200+180*Math.sin(a)}" stroke="var(--border)" stroke-width="1" />`;
+            }
+            let sunA = (idx * 30 + 15 + 180) * Math.PI/180; // Added 180 to align visually
+            svg.innerHTML += `<circle cx="${200+140*Math.cos(sunA)}" cy="${200+140*Math.sin(sunA)}" r="12" fill="var(--gold)" filter="drop-shadow(0 0 10px var(--gold))" />`;
+        }
+
+        function drawVedicChart(lagna) {
+            const svg = document.getElementById('vedicSVG');
+            svg.innerHTML = `
+                <path d="M0,0 L400,0 L400,400 L0,400 Z M0,0 L400,400 M400,0 L0,400 M200,0 L0,200 L200,400 L400,200 Z" class="vedic-line" />
+            `;
+            const coords = [{x:200,y:125},{x:130,y:65},{x:65,y:130},{x:130,y:200},{x:65,y:275},{x:130,y:340},{x:200,y:275},{x:270,y:340},{x:335,y:275},{x:270,y:200},{x:335,y:130},{x:270,y:65}];
+            coords.forEach((c, i) => {
+                svg.innerHTML += `<text x="${c.x}" y="${c.y}" class="vedic-num" text-anchor="middle">${((lagna + i) % 12) + 1}</text>`;
+            });
+        }
+
+        // --- EXTRAS ---
+        function drawTarot() {
+            const t = [
+                {n:"The Sun", i:"☀️", m:"Pure success, joy, and vitality."},
+                {n:"The Hermit", i:"🕯️", m:"Time for inner reflection and wisdom."},
+                {n:"The Star", i:"✨", m:"Inspiration and hope are on the horizon."},
+                {n:"The Chariot", i:"🏎️", m:"Victory through willpower and discipline."},
+                {n:"Strength", i:"🦁", m:"Mastery of emotions and inner courage."}
+            ];
+            const card = t[Math.floor(Math.random()*t.length)];
+            const slot = document.getElementById('tarotCard');
+            slot.style.transform = "rotateY(360deg)";
+            setTimeout(() => {
+                slot.innerText = card.i;
+                document.getElementById('tarotTitle').innerText = card.n;
+                document.getElementById('tarotMeaning').innerText = card.m;
+            }, 300);
+        }
+
+        function consultOracle() {
+            const q = document.getElementById('oracleQuery').value;
+            if(!q) return;
+            const a = ["The alignment is Perfect", "Wait for the moon to wane", "Mars creates temporary blocks", "The stars whisper 'Yes'", "Focus on your inner North Star"];
+            document.getElementById('oracleAnswer').innerText = a[Math.floor(Math.random()*a.length)];
+        }
+
+        function calculateLifePath(dob) {
+            let s = dob.replace(/-/g, '').split('').reduce((a,b)=>a+parseInt(b), 0);
+            while(s > 9 && s!==11 && s!==22) s = s.toString().split('').reduce((a,b)=>a+parseInt(b), 0);
+            return s;
+        }
+
+        function saveNote() {
+            const n = document.getElementById('journalNote').value;
+            if(!n) return;
+            const d = document.getElementById('notesDisplay');
+            d.innerHTML = `<div class="glass-card mt-4"><small class="muted">${new Date().toLocaleString()}</small><p class="mt-2">${n}</p></div>` + d.innerHTML;
+            document.getElementById('journalNote').value = '';
+        }
+    </script>
+</body>
+</html>
