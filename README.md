@@ -89,4 +89,3 @@ AstraNova Zenith is an interactive, front-end based web application that provide
 Project: AstraNova Zenith  
 Year: 2026  
 
-## 📂 Project Structure
