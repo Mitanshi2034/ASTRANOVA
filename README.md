@@ -1,8 +1,8 @@
-🌌 AstraNova Zenith – Precision Astrology Suite
+#🌌 AstraNova Zenith – Precision Astrology Suite
 
 AstraNova Zenith is a modern, interactive web-based astrology application that provides personalized astrological insights using Western Astrology, Vedic Astrology, and Numerology. The application is fully client-side and delivers real-time results with a visually immersive UI.
 
-✨ Features
+#✨ Features
 🔮 Western Astrology
 Sun Sign detection
 Zodiac personality insights
@@ -28,7 +28,7 @@ Save reflections with timestamps
 ⚡ Real-Time Processing
 Instant results without page reload
 🎨 Modern UI
-🛠️ Tech Stack
+#🛠️ Tech Stack
 HTML5 – Structure
 CSS3 – Styling & animations
 JavaScript (Vanilla JS) – Logic & interactivity
@@ -38,18 +38,18 @@ System validates input
 JavaScript processes astrology calculations
 Results are displayed dynamically
 Additional modules provide insights (match, tarot, oracle, journal)
-🎯 Objectives
+#🎯 Objectives
 Provide an interactive astrology platform
 Combine multiple astrology systems in one app
 Demonstrate front-end development skills
 Deliver real-time user experience without backend
-📈 Future Scope
+#📈 Future Scope
 Add AI-based personalized predictions
 Integrate real astrology APIs
 User login & cloud storage
 Mobile app version
 More detailed horoscope analysis
-👩‍💻 Author
+#👩‍💻 Author
 
 Mitanshi Goyal
 📌 Project: AstraNova Zenith
